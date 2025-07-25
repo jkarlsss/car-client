@@ -88,6 +88,34 @@ export const assets = {
     car_image4
 }
 
+
+export const cardsData = [
+        {
+            image: 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?q=80&w=200',
+            name: 'Briar Martin',
+            handle: '@neilstellar',
+            date: 'April 20, 2025'
+        },
+        {
+            image: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200',
+            name: 'Avery Johnson',
+            handle: '@averywrites',
+            date: 'May 10, 2025'
+        },
+        {
+            image: 'https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=200&auto=format&fit=crop&q=60',
+            name: 'Jordan Lee',
+            handle: '@jordantalks',
+            date: 'June 5, 2025'
+        },
+        {
+            image: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=200&auto=format&fit=crop&q=60',
+            name: 'Avery Johnson',
+            handle: '@averywrites',
+            date: 'May 10, 2025'
+        },
+    ];
+
 export const menuLinks = [
     { name: "Home", path: "/" },
     { name: "Cars", path: "/cars" },
@@ -109,7 +137,7 @@ export const dummyUserData = {
   "image": user_profile,
 }
 
-export const dummyCarData = [
+export const dummyCarData: Car[] = [
     {
         "_id": "67ff5bc069c03d4e45f30b77",
         "owner": "67fe3467ed8a8fe17d0ba6e2",

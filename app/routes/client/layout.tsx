@@ -1,13 +1,17 @@
-import { Outlet } from "react-router"
-import Navbar from "../../components/Navbar"
+import { useState } from "react";
+import { Outlet, useLocation } from "react-router";
+import Navbar from "../../components/Navbar";
 
 const ProductsLayout = () => {
+  const [showLogin, setShowLogin] = useState(false);
+  const isOwnerPath = useLocation().pathname.startsWith("/owner");
+
   return (
     <div>
-      <Navbar />
+      {!isOwnerPath && <Navbar setShowLogin={setShowLogin} />}
       <Outlet />
     </div>
-  )
-}
+  );
+};
 
-export default ProductsLayout
+export default ProductsLayout;
