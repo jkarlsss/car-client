@@ -5,7 +5,7 @@ const Hero = () => {
   const [pickupLocation, setPickupLocation] = useState("");
 
   return (
-    <div className="h-screen flex-col-center gap-14 text-center">
+    <div id="home" className="h-screen flex-col-center gap-14 text-center">
       <h1 className="text-4xl md:text-5xl font-semibold">
         Luxury Cars at Your Fingertips
       </h1>

@@ -1,4 +1,5 @@
 import { cardsData } from "../constants/assets";
+import Title from "./Title";
 
 const CreateCard = ({ name, image, handle, date }: CardData) => (
   <div className="p-4 rounded-lg mx-4 shadow hover:shadow-lg shadow-gray-600 transition-all duration-200 w-72 shrink-0">
@@ -53,7 +54,7 @@ const CreateCard = ({ name, image, handle, date }: CardData) => (
 );
 const Testimonial = () => {
   return (
-    <>
+    <div id="testimonials" className="mt-20">
       <style>{`
             @keyframes marqueeScroll {
                 0% { transform: translateX(0%); }
@@ -69,7 +70,9 @@ const Testimonial = () => {
             }
         `}</style>
 
-      <div className="marquee-row w-full mx-auto max-w-5xl mt-25 overflow-hidden relative">
+        <Title title="Testimonials" subtitle="What our clients say" align="center" />
+
+      <div className="marquee-row w-full mx-auto max-w-5xl overflow-hidden relative">
         <div className="absolute left-0 top-0 h-full w-20 z-10 pointer-events-none bg-gradient-to-r from-gray-950 to-transparent"></div>
         <div className="marquee-inner flex transform-gpu min-w-[200%] pt-10 pb-5">
           {[...cardsData, ...cardsData].map((card, index) => (
@@ -88,7 +91,7 @@ const Testimonial = () => {
         </div>
         <div className="absolute right-0 top-0 h-full w-20 md:w-40 z-10 pointer-events-none bg-gradient-to-l from-gray-950 to-transparent"></div>
       </div>
-    </>
+    </div>
   );
 };
 

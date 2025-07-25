@@ -6,6 +6,7 @@ export default [
     route('/cars', 'routes/client/cars.tsx'),
     route('/cars/:id', 'routes/client/car-details.tsx'),
     route('/my-bookings', 'routes/client/my-bookings.tsx'),
+    route('/owner', 'routes/client/owner.tsx'),
   ]),
   layout('routes/auth/layout.tsx', [
     route('/sign-in', 'routes/auth/sign-in.tsx'),

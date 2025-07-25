@@ -21,7 +21,7 @@ const Navbar = ({
         <img src={assets.logo} alt="logo" className="h-8" />
       </Link>
       <div
-        className={`max-sm:fixed max-sm:h-screen max-sm:w-full max-sm:top-16 max-sm:border-t
+        className={`max-sm:fixed bg-gray-950 max-sm:h-screen max-sm:w-full max-sm:top-16 max-sm:border-t
       border-gray-400 right-0 flex flex-col sm:flex-row items-start sm:items-center
       gap-4 sm:gap-8 max-sm:p-4 transition-all duration-300 z-50 ${
         open ? "max-sm:translate-x-0" : "max-sm:translate-x-full"
