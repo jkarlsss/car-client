@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Outlet, useLocation } from "react-router";
+import { Outlet } from "react-router";
 import Footer from "../../components/Footer";
 import LoginForm from "../../components/LoginForm";
 import Navbar from "../../components/Navbar";
@@ -16,11 +16,10 @@ export function links() {
 
 const ProductsLayout = () => {
   const [showLogin, setShowLogin] = useState(false);
-  const isOwnerPath = useLocation().pathname.startsWith("/owner");
 
   return (
     <div>
-      {!isOwnerPath && <Navbar setShowLogin={setShowLogin} />}
+      <Navbar setShowLogin={setShowLogin} />
       <Outlet />
       <Footer />
       <LoginForm open={showLogin} setOpen={setShowLogin} />

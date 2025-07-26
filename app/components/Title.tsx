@@ -13,7 +13,7 @@ const Title = ({ title, subtitle, align }: TitleProps) => {
     >
       <h1 className="font-semibold text-4xl md:text-[40px]">{title}</h1>
       <p
-        className="text-sm md:text-base text-gray-500/90 mt-2
+        className="text-sm md:text-base text-gray-400 mt-2
       max-w-156"
       >
         {subtitle}

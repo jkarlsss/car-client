@@ -38,11 +38,11 @@ const Navbar = ({
         ))}
         <div
           className="hidden lg:flex items-center text-sm gap-2
-        border border-gray-400 px-3 rounded-full max-w-56"
+        border border-gray-700 px-3 rounded-full max-w-56"
         >
           <input
             type="text"
-            className="p-1.5 w-full bg-transparent outline-none placeholder-gray-500"
+            className="p-1.5 w-full bg-transparent outline-none placeholder-gray-400"
             placeholder="Search products"
           />
           <img src={assets.search_icon} alt="search" />
@@ -53,7 +53,7 @@ const Navbar = ({
           </button>
           <button
             onClick={() => setShowLogin(true)}
-            className="cursor-pointer px-6 py-2 border rounded-md
+            className="cursor-pointer px-6 py-2 border border-gray-700 rounded-md
           hover:bg-gray-800 transition duration-200"
           >
             Login

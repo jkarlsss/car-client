@@ -110,7 +110,7 @@ export const cardsData = [
         },
         {
             image: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=200&auto=format&fit=crop&q=60',
-            name: 'Felipen Dulfo',
+            name: 'Felipin Dulfo',
             handle: '@averywrites',
             date: 'May 10, 2025'
         },
@@ -128,6 +128,7 @@ export const ownerMenuLinks = [
     { name: "Manage Cars", path: "/owner/manage-cars", icon: carIcon, coloredIcon: carIconColored },
     { name: "Manage Bookings", path: "/owner/manage-bookings", icon: listIcon, coloredIcon: listIconColored },
 ]
+
 
 export const dummyUserData = {
   "_id": "6847f7cab3d8daecdb517095",
@@ -207,6 +208,7 @@ export const dummyCarData: Car[] = [
         "createdAt": "2025-04-17T06:15:47.318Z",
     }
 ];
+
 
 export const dummyMyBookingsData = [
     {
