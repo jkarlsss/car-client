@@ -22,7 +22,7 @@ const ProductsLayout = () => {
       <Navbar setShowLogin={setShowLogin} />
       <Outlet />
       <Footer />
-      <LoginForm open={showLogin} setOpen={setShowLogin} />
+      {showLogin && <LoginForm setOpen={setShowLogin} />}
     </div>
   );
 };

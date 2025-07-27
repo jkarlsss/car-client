@@ -1,4 +1,7 @@
-<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M13.3737 20.2322C13.3181 20.0826 13.3181 19.9179 13.3737 19.7682C13.9148 18.4561 14.8334 17.3343 16.0129 16.5448C17.1924 15.7554 18.5797 15.334 19.999 15.334C21.4183 15.334 22.8057 15.7554 23.9852 16.5448C25.1647 17.3343 26.0832 18.4561 26.6244 19.7682C26.6799 19.9179 26.6799 20.0826 26.6244 20.2322C26.0832 21.5443 25.1647 22.6662 23.9852 23.4556C22.8057 24.2451 21.4183 24.6665 19.999 24.6665C18.5797 24.6665 17.1924 24.2451 16.0129 23.4556C14.8334 22.6662 13.9148 21.5443 13.3737 20.2322Z" stroke="#1F2937" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M20 22C21.1046 22 22 21.1046 22 20C22 18.8954 21.1046 18 20 18C18.8954 18 18 18.8954 18 20C18 21.1046 18.8954 22 20 22Z" stroke="#1F2937" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Uploaded to: SVG Repo, www.svgrepo.com, Transformed by: SVG Repo Mixer Tools -->
+<svg width="64px" height="64px" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="SVGRepo_bgCarrier" stroke-width="0"/>
+<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
+<g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M0 8L3.07945 4.30466C4.29638 2.84434 6.09909 2 8 2C9.90091 2 11.7036 2.84434 12.9206 4.30466L16 8L12.9206 11.6953C11.7036 13.1557 9.90091 14 8 14C6.09909 14 4.29638 13.1557 3.07945 11.6953L0 8ZM8 11C9.65685 11 11 9.65685 11 8C11 6.34315 9.65685 5 8 5C6.34315 5 5 6.34315 5 8C5 9.65685 6.34315 11 8 11Z" fill="#FFF"/> </g>
+</svg>
