@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { assets } from "../constants/assets";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { useAppProvider } from "~/context/AppContext";
 
 const LoginForm = ({
   setOpen,
@@ -7,9 +10,44 @@ const LoginForm = ({
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const [islogin, setIslogin] = useState("login");
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: ''
+  });
 
-  const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
+  const { fetchUser, setToken } = useAppProvider();
+
+  const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (islogin === 'login') {
+      try {
+        
+      const {data} =  await axios.post('/api/user/login',
+        {
+          name: formData.name,
+          email: formData.email,
+          password: formData.password
+        }
+      )
+      
+      if (data.success) {
+        toast.success(data.message);
+        localStorage.setItem('token', data.token);
+        axios.defaults.headers.common['Authorization'] = data.token;
+      } else {
+        toast.error(data.message);
+      }
+      } catch (error: any) {
+        toast.error(error);
+      }
+    }
+
+    // axios.post('/api/user/register', 
+
+    // )
+
   };
 
   return (
@@ -35,6 +73,8 @@ const LoginForm = ({
           {islogin === "register" && (
             <input
               id="name"
+              value={formData.name}
+              onChange={(e) => setFormData({...formData, name: e.target.value})}
               className="w-full bg-transparent border my-3 border-gray-500/30 outline-none rounded-full py-2.5 px-4"
               type="text"
               placeholder="Enter your name"
@@ -43,6 +83,8 @@ const LoginForm = ({
           )}
           <input
             id="email"
+            value={formData.email}
+            onChange={(e) => setFormData({...formData, email: e.target.value})}
             className="w-full  bg-transparent border my-3 border-gray-500/30 outline-none rounded-full py-2.5 px-4"
             type="email"
             placeholder="Enter your email"
@@ -50,6 +92,7 @@ const LoginForm = ({
           />
           <input
             id="password"
+            onChange={(e) => setFormData({...formData, password: e.target.value})}
             className="w-full bg-transparent border mt-1 border-gray-500/30 outline-none rounded-full py-2.5 px-4"
             type="password"
             placeholder="Enter your password"

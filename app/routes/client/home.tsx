@@ -1,3 +1,4 @@
+import { useAppProvider } from "~/context/AppContext";
 import Banner from "../../components/Banner";
 import FeaturedSection from "../../components/FeaturedSection";
 import Hero from "../../components/Hero";
@@ -15,6 +16,8 @@ export function meta() {
 }
 
 const Home = () => {
+
+  const data = useAppProvider();
 
   return (
     <>
