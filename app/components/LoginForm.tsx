@@ -4,11 +4,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { useAppProvider } from "~/context/AppContext";
 
-const LoginForm = ({
-  setOpen,
-}: {
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-}) => {
+const LoginForm = () => {
   const [islogin, setIslogin] = useState("login");
   const [formData, setFormData] = useState({
     name: '',
@@ -16,7 +12,7 @@ const LoginForm = ({
     password: ''
   });
 
-  const { fetchUser, setToken } = useAppProvider();
+  const { fetchUser, setToken, user, setShowLogin } = useAppProvider();
 
   const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -36,6 +32,8 @@ const LoginForm = ({
         toast.success(data.message);
         localStorage.setItem('token', data.token);
         axios.defaults.headers.common['Authorization'] = data.token;
+        fetchUser();
+        setShowLogin(false);
       } else {
         toast.error(data.message);
       }
@@ -59,7 +57,7 @@ const LoginForm = ({
         <div className="flex justify-end">
           <button className="flex">
             <img
-              onClick={() => setOpen(false)}
+              onClick={() => setShowLogin(false)}
               src={assets.close_icon}
               alt="close"
               className="h-4 cursor-pointer"

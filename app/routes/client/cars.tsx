@@ -1,11 +1,39 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Title from "../../components/Title";
 import { assets, dummyCarData } from "../../constants/assets";
 import CarCard from "../../components/CarCard";
+import { fetchCars } from "~/api/carApi";
+import toast from "react-hot-toast";
+import Loader from "~/components/Loader";
 
 const Cars = () => {
   const [search, setSearch] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [cars, setCars] = useState<Car[] | null>(null)
 
+  useEffect(() => {
+    const loadCars = async () => {
+      try {
+        setIsLoading(true);
+        const cars = await fetchCars();
+
+        setCars(cars);
+      } catch (error) {
+        console.log(error);
+        toast.error('Server error code 500');
+        setIsLoading(false);
+
+      } finally {
+        setIsLoading(false);
+        console.log(cars);
+        
+      }
+    };
+
+    loadCars();
+    
+  }, [])
+  
   return (
     <div>
       <div className="flex flex-col items-center py-20 max-md:px-4">
@@ -42,11 +70,22 @@ const Cars = () => {
         <p className="text-gray-300 xl:px-20 max-w-7xl mx-auto">Showing {dummyCarData.length || 0} Cars</p>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-4
         xl:px-20 max-w-7xl mx-auto">
-          {dummyCarData.map((car) => (
-            <div key={car._id}>
+          {isLoading ? (
+            <>
+              <Loader />
+              <Loader />
+              <Loader />
+              <Loader />
+              <Loader />
+              <Loader />
+            </>
+          ):(
+            cars?.map((car) => (
+              <div key={car._id}>
               <CarCard {...car} />
-            </div>
-          ))}
+              </div>
+            ))
+          )}
         </div>
       </div>
     </div>

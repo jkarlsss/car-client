@@ -1,8 +1,8 @@
-import { useState } from "react";
 import { Outlet } from "react-router";
 import Footer from "../../components/Footer";
 import LoginForm from "../../components/LoginForm";
 import Navbar from "../../components/Navbar";
+import { useAppProvider } from "~/context/AppContext";
 
 export function links() {
   return [
@@ -15,14 +15,15 @@ export function links() {
 }
 
 const ProductsLayout = () => {
-  const [showLogin, setShowLogin] = useState(false);
+
+  const { isLoggedIn } = useAppProvider();
 
   return (
     <div>
-      <Navbar setShowLogin={setShowLogin} />
+      <Navbar />
       <Outlet />
       <Footer />
-      {showLogin && <LoginForm setOpen={setShowLogin} />}
+      {isLoggedIn && <LoginForm />}
     </div>
   );
 };

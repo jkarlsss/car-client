@@ -4,9 +4,13 @@ import toast from "react-hot-toast";
 
 interface AppContextProps {
     user: User | null;
-    setUser: (name: User) => void;
+    setUser: React.Dispatch<React.SetStateAction<User | null>>;
     token: string | null;
-    setToken: (token: string) => void;
+    setToken: React.Dispatch<React.SetStateAction<string | null>>;
+    isOwner: boolean,
+    setIsOwner: React.Dispatch<React.SetStateAction<boolean>>,
+    isLoggedIn: boolean,
+    setShowLogin: React.Dispatch<React.SetStateAction<boolean>>,
     fetchUser: () => void;
     logOut: () => void;
 }
@@ -16,6 +20,10 @@ export const AppContext = createContext<AppContextProps>({
         setUser: () => {},
         token: '',
         setToken: () => {},
+        isOwner: false,
+        setIsOwner: ()=>{},
+        isLoggedIn: false,
+        setShowLogin: ()=>{},
         fetchUser: () => {},
         logOut: () => {},
     });
@@ -24,7 +32,9 @@ export const AppProvider = ({ children } : { children: React.ReactNode }) => {
 
     const [user, setUser] = useState<User | null>(null);
     const [token, setToken] = useState<string | null>(null);
-    const [cars, setCars] = useState<Car | null>(null)
+    const [cars, setCars] = useState<Car | null>(null);
+    const [isOwner, setIsOwner] = useState(false);
+    const [isLoggedIn, setShowLogin] = useState(false);
 
     axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
 
@@ -32,8 +42,8 @@ export const AppProvider = ({ children } : { children: React.ReactNode }) => {
         try {
             const {data} = await axios.get('/api/user/data');
             if (!data.success) return;
+            setIsOwner(data.user.role === 'owner');
             setUser(data.user);
-            console.log(data.user);
         } catch (error : any) {
             logOut();
         }
@@ -41,10 +51,7 @@ export const AppProvider = ({ children } : { children: React.ReactNode }) => {
 
     const fetchCars = async () => {
         const { data } = await axios.get('/api/user/cars');
-        console.log(data.cars);
-        
-        setCars(data.cars);
-        console.log(cars);
+        setCars({...data.cars, model: '123'});
     }
 
     const logOut = () => {
@@ -59,16 +66,10 @@ export const AppProvider = ({ children } : { children: React.ReactNode }) => {
         const localToken = localStorage.getItem('token');
         if (localToken) {
             setToken(localToken);
-        }
-    }, []);
-
-    useEffect(() => {
-        if (token) {
-            axios.defaults.headers.common['Authorization'] = token;
+            axios.defaults.headers.common['Authorization'] = localToken;
             fetchUser();
         }
-    }, [token]);
-
+    }, []);
     
 
     const value = {
@@ -76,14 +77,18 @@ export const AppProvider = ({ children } : { children: React.ReactNode }) => {
         setUser: setUser,
         token: token,
         setToken: setToken,
+        isOwner: isOwner,
+        setIsOwner: setIsOwner,
+        isLoggedIn: isLoggedIn,
+        setShowLogin: setShowLogin,
         logOut: logOut,
         fetchUser: fetchUser
     };
 
     return (
-        <AppContext.Provider value={value}>
+        <AppContext value={value}>
             { children }
-        </AppContext.Provider>
+        </AppContext>
     )
     
 }

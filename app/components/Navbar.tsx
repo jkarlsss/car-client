@@ -1,15 +1,17 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
 import { assets, menuLinks } from "../constants/assets";
+import { useAppProvider } from "~/context/AppContext";
 
-const Navbar = ({
-  setShowLogin,
-}: {
-  setShowLogin: React.Dispatch<React.SetStateAction<boolean>>;
-}) => {
+const Navbar = () => {
+
+  const { setShowLogin, logOut, user } = useAppProvider();
   const location = useLocation();
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
+
+  console.log(user);
+  
 
   return (
     <nav
@@ -52,11 +54,11 @@ const Navbar = ({
             Dashboard
           </button>
           <button
-            onClick={() => setShowLogin(true)}
+            onClick={() => {user ? logOut() : setShowLogin(true)}}
             className="cursor-pointer px-6 py-2 border border-gray-700 rounded-md
           hover:bg-gray-800 transition duration-200"
           >
-            Login
+            { user ? 'logOut' : 'Login'}
           </button>
         </div>
       </div>

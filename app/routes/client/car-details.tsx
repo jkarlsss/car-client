@@ -2,15 +2,18 @@ import { useFetcher, useNavigate, type LoaderFunctionArgs } from "react-router";
 import Loader from "../../components/Loader";
 import { assets, dummyCarData } from "../../constants/assets";
 import type { Route } from "./+types/car-details";
+import { useEffect } from "react";
+import { fetchCarDetails } from "~/api/carApi";
 
-export const loader = ({ params }: LoaderFunctionArgs) => {
-  const id = params.id;
+export const loader = async ({ params }: LoaderFunctionArgs) => {
+  const id = params.id as string;
 
   if (!id) {
     throw new Error("No id provided");
   }
 
-  const car = dummyCarData.find((car) => car._id === id);
+  const car = await fetchCarDetails(id);
+
 
   return car;
 };
@@ -33,6 +36,8 @@ const CarDetails = ({ loaderData }: Route.ComponentProps) => {
     isAvaliable,
     createdAt,
   } = loaderData as Car;
+
+  console.log(loaderData);
 
   const navigate = useNavigate();
   const fetcher = useFetcher();

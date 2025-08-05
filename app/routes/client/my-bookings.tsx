@@ -1,18 +1,38 @@
 import { useEffect, useState } from "react";
 import Title from "../../components/Title";
 import { assets, dummyMyBookingsData } from "../../constants/assets";
+import { fetchUserBookings } from "~/api/bookingApi";
+import toast from "react-hot-toast";
+import Loader from "~/components/Loader";
 
 const MyBookings = () => {
-  const [bookings, setBookings] = useState<Booking[] | null>([]);
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const currency = import.meta.env.VITE_CURRENCY;
 
-  const fetchMyBooking = async () => {
-    setBookings(dummyMyBookingsData);
-  };
-
   useEffect(() => {
+
+    const fetchMyBooking = async () => {
+      
+      try {
+      setIsLoading(true);
+      const myBooks = await fetchUserBookings();
+
+      if (!myBooks) return;
+
+      setBookings(myBooks);
+      } catch (error) {
+        toast.error('something went wrong');
+        setIsLoading(false);
+      } finally {
+        setIsLoading(false);
+      }
+
+    };
+
     fetchMyBooking();
-  }, [setBookings]);
+    
+  }, []);
 
   return (
     <div
@@ -26,7 +46,8 @@ const MyBookings = () => {
       />
 
       <div>
-        {bookings?.map((booking, index) => (
+        {isLoading && <Loader />}
+        {bookings?.length !== 0 && bookings.map((booking, index) => (
           <div
             key={booking._id}
             className="grid grid-cols-1 md:grid-cols-4
@@ -63,7 +84,7 @@ const MyBookings = () => {
                 w-4 h-4 mt-1" />
                 <div>
                   <p>Rental Period</p>
-                  {booking.pickupDate.split("T")[0]} To {booking.returnDate.split("T")[0]}
+                  {booking.pickupDate?.split("T")[0]} To {booking.returnDate?.split("T")[0]}
                 </div>
               </div>
               <div className="flex items-start gap-2 mt-3">
@@ -82,12 +103,13 @@ const MyBookings = () => {
               <div className="text-sm text-gray-300 font-semibold text-right">
                 <p>Total Price</p>
                 <h1 className="text-2xl font-semibold">{ currency }{booking.price}</h1>
-                <p>Booked on {booking.createdAt.split("T")[0]}</p>
+                <p>Booked on {booking.createdAt?.split("T")[0]}</p>
               </div>
 
             </div>
           </div>
         ))}
+        {!isLoading && bookings.length === 0 && "No Bookings Found"}
       </div>
     </div>
   );

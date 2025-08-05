@@ -11,6 +11,7 @@ import type { Route } from "./+types/root";
 import "./app.css";
 import { AppProvider } from "./context/AppContext";
 import { Toaster } from "react-hot-toast";
+import ClientToaster from "./components/ClientToaster";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -35,6 +36,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
+        <ClientToaster />
         {children}
         <ScrollRestoration />
         <Scripts />
@@ -45,12 +47,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   return (
-    <>
-      <Toaster />
       <AppProvider>
         <Outlet />
       </AppProvider>
-    </>
   );
 }
 
