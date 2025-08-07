@@ -1,9 +1,30 @@
 import { Link } from "react-router";
 import { assets } from "../constants/assets";
+import { useEffect, useRef } from "react";
+import { motion, useAnimation, useInView } from "motion/react";
 
 const Footer = () => {
+  const ref = useRef(null);
+  const inView = useInView(ref);
+  const controls = useAnimation();
+
+  useEffect(() => {
+    if (inView) {
+      controls.start({
+        y: 0, 
+        opacity: 1,
+        transition: {duration: 0.8, delay: 0.3}
+      })
+    } else {
+      controls.start({
+        y: 50,
+        opacity: 0
+      })
+    }
+  }, [inView, controls])
+
   return (
-    <footer className="px-6 md:px-16 lg:px-24 xl:px-32 w-full mt-20">
+    <motion.footer animate={controls} ref={ref} className="px-6 md:px-16 lg:px-24 xl:px-32 w-full mt-20">
       <div className="flex flex-col md:flex-row items-start justify-center gap-10 py-10 border-b border-gray-300/30">
         <div className="max-w-96">
           <img src={assets.logo} alt="logo" />
@@ -89,7 +110,7 @@ const Footer = () => {
         Copyright 2024 © <a href="https://myportfolio.com">Kals</a>. All
         Right Reserved.
       </p>
-    </footer>
+    </motion.footer>
   );
 };
 

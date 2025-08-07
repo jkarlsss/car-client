@@ -1,54 +1,123 @@
-import { useFetcher, useNavigate, type LoaderFunctionArgs } from "react-router";
-import Loader from "../../components/Loader";
-import { assets, dummyCarData } from "../../constants/assets";
-import type { Route } from "./+types/car-details";
-import { useEffect } from "react";
+import { useFetcher, useNavigate, useParams } from "react-router";
+import Loader from "../../components/owner/Loader";
+import { assets } from "../../constants/assets";
+import { useEffect, useState } from "react";
 import { fetchCarDetails } from "~/api/carApi";
+import toast from "react-hot-toast";
+import { createCarBooking } from "~/api/bookingApi";
+import { useAppProvider } from "~/context/AppContext";
 
-export const loader = async ({ params }: LoaderFunctionArgs) => {
-  const id = params.id as string;
+// export const loader = async ({ params }: LoaderFunctionArgs) => {
+//   const id = params.id as string;
 
-  if (!id) {
-    throw new Error("No id provided");
-  }
+//   if (!id) {
+//     throw new Error("No id provided");
+//   }
 
-  const car = await fetchCarDetails(id);
+//   const car = await fetchCarDetails(id);
 
 
-  return car;
-};
+//   return car;
+// };
 
-const CarDetails = ({ loaderData }: Route.ComponentProps) => {
-  const {
-    _id,
-    owner,
-    brand,
-    model,
-    image,
-    year,
-    category,
-    seating_capacity,
-    fuel_type,
-    transmission,
-    pricePerDay,
-    location,
-    description,
-    isAvaliable,
-    createdAt,
-  } = loaderData as Car;
+const CarDetails = () => {
+// const CarDetails = ({ loaderData }: Route.ComponentProps) => {
+  // const {
+  //   _id,
+  //   owner,
+  //   brand,
+  //   model,
+  //   image,
+  //   year,
+  //   category,
+  //   seating_capacity,
+  //   fuel_type,
+  //   transmission,
+  //   pricePerDay,
+  //   location,
+  //   description,
+  //   isAvailable,
+  //   createdAt,
+  // } = loaderData as Car;
 
-  console.log(loaderData);
-
+  const {id} = useParams<string>();
+  const [carDetails, setCarDetails] = useState<Car | null>(null)
+  const [pickupDate, setPickupDate] = useState('');
+  const [returnDate, setReturnDate] = useState('');
+  const [isBookLoading, setIsBookLoading] = useState(false);
+  const [isCarDetailLoading, setIsCarDetailLoading] = useState(true);
+  const { user } = useAppProvider();
+  
   const navigate = useNavigate();
   const fetcher = useFetcher();
   const currency = import.meta.env.VITE_CURRENCY;
 
+  useEffect(() => {
+
+    if(!id) return;
+
+    const loadCarDetails = async () => {
+      try {
+        setIsCarDetailLoading(true);
+        const carInfo = await fetchCarDetails(id);
+
+        if (!carInfo) {
+          toast.error('No car info found');
+          setIsCarDetailLoading(false);
+          return;
+        }
+
+        setCarDetails(carInfo);
+      } catch (error) {
+        console.error(error);
+        setIsCarDetailLoading(false);
+        toast.error('Server error '+ error);
+      } finally {
+        setIsCarDetailLoading(false);
+      }
+    }
+
+    loadCarDetails();
+
+  }, [id])
+  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setTimeout(() => {}, 2000);
+    try {
+      if (!carDetails || !user) return;
+      setIsBookLoading(true);
+
+      const isBookingCreated = await createCarBooking({
+        car: carDetails._id,
+        owner: carDetails?.owner,
+        pickUpDate: pickupDate,
+        returnDate: returnDate,
+        user: user?._id
+      });
+
+      if (!isBookingCreated) {
+        toast.error('Not available');
+        setIsBookLoading(false);
+        return;
+      }
+      toast.success('Successfuly created booking');
+
+    } catch (error) {
+        toast.error('error server '+ error);
+        console.error(error);
+        setIsBookLoading(false);
+    } finally {
+      setIsBookLoading(false);
+    }
   };
 
-  return loaderData ? (
+  
+  if (isCarDetailLoading) return (<div className="flex-center flex-1 h-[80vh]"><Loader /></div>)
+  
+    if (!carDetails) return (<div className="flex-center flex-1">No Car Found with that id</div>)
+
+  return (
     <div className="px-6 md:px-16 lg:px-24 xl:px-32 mt-6">
       <button
         onClick={() => navigate(-1)}
@@ -61,26 +130,26 @@ const CarDetails = ({ loaderData }: Route.ComponentProps) => {
         {/* Left: Card Image & Details */}
         <div className="lg:col-span-2">
           <img
-            src={image}
+            src={carDetails?.image}
             alt="car image"
             className="w-full h-auto object-cover rounded-xl md:max-h-100 mb-6"
           />
           <div className="space-y-6">
             <div>
               <h1 className="text-2xl font-bold">
-                {brand} {model}
+                {carDetails?.brand} {carDetails?.model}
               </h1>
               <p className="text-gray-400 text-lg">
-                {category} - {year}
+                {carDetails?.category} - {carDetails?.year}
               </p>
             </div>
             <hr className="border-gray-500 my-6" />
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               {[
-                { icon: assets.users_icon, text: `${seating_capacity} seats` },
-                { icon: assets.fuel_icon, text: fuel_type },
-                { icon: assets.car_icon, text: transmission },
-                { icon: assets.location_icon, text: location },
+                { icon: assets.users_icon, text: `${carDetails?.seating_capacity} seats` },
+                { icon: assets.fuel_icon, text: carDetails?.fuel_type },
+                { icon: assets.car_icon, text: carDetails?.transmission },
+                { icon: assets.location_icon, text: carDetails?.location },
               ].map(({ icon, text }) => (
                 <div
                   key={text}
@@ -95,7 +164,7 @@ const CarDetails = ({ loaderData }: Route.ComponentProps) => {
             {/* Description */}
             <div>
               <h1 className="text-xl font-medium mb-3">Description</h1>
-              <p className="text-gray-400">{description}</p>
+              <p className="text-gray-400">{carDetails?.description}</p>
             </div>
             {/* Features */}
             <div>
@@ -133,7 +202,7 @@ const CarDetails = ({ loaderData }: Route.ComponentProps) => {
           text-gray-300 font-semibold"
           >
             {currency}
-            {pricePerDay} <span className="text-base font-normal">per day</span>{" "}
+            {carDetails?.pricePerDay} <span className="text-base font-normal">per day</span>{" "}
           </p>
           <hr className="my-6" />
           <div className="flex flex-col gap-2 text-gray-400">
@@ -141,6 +210,8 @@ const CarDetails = ({ loaderData }: Route.ComponentProps) => {
             <input
               type="date"
               className="border border-gray-700 px-3 py-2 rounded-lg"
+              value={pickupDate}
+              onChange={(e) => setPickupDate(e.target.value)}
               required
               id="pickup-date"
               min={new Date().toISOString().split("T")[0]}
@@ -150,6 +221,8 @@ const CarDetails = ({ loaderData }: Route.ComponentProps) => {
             <label htmlFor="return-date">Return date</label>
             <input
               type="date"
+              value={returnDate}
+              onChange={(e) => setReturnDate(e.target.value)}
               className="border border-gray-700 px-3 py-2 rounded-lg"
               required
               id="return-date"
@@ -168,10 +241,6 @@ const CarDetails = ({ loaderData }: Route.ComponentProps) => {
           </p>
         </fetcher.Form>
       </div>
-    </div>
-  ) : (
-    <Loader />
-  );
-};
-
+    </div> );
+}
 export default CarDetails;

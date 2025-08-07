@@ -1,3 +1,5 @@
+import { motion } from "motion/react";
+
 interface TitleProps {
   title: string;
   subtitle: string;
@@ -5,8 +7,12 @@ interface TitleProps {
 }
 
 const Title = ({ title, subtitle, align }: TitleProps) => {
+
   return (
-    <div
+    <motion.div
+    initial={{x: 50, opacity: 0}}
+    animate={{x:0, opacity: 1}}
+    transition={{ duration: .8, delay: 0.3}}
       className={`flex-col-center text-center ${
         align === "left" ? "md:items-start" : "md:text-left"
       }`}
@@ -18,7 +24,7 @@ const Title = ({ title, subtitle, align }: TitleProps) => {
       >
         {subtitle}
       </p>
-    </div>
+    </motion.div>
   );
 };
 

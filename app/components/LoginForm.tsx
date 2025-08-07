@@ -3,6 +3,7 @@ import { assets } from "../constants/assets";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useAppProvider } from "~/context/AppContext";
+import { fetchUser } from "~/api/userApi";
 
 const LoginForm = () => {
   const [islogin, setIslogin] = useState("login");
@@ -12,15 +13,14 @@ const LoginForm = () => {
     password: ''
   });
 
-  const { fetchUser, setToken, user, setShowLogin } = useAppProvider();
+  const { setShowLogin, setUser, setIsOwner } = useAppProvider();
 
   const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (islogin === 'login') {
       try {
         
-      const {data} =  await axios.post('/api/user/login',
+      const {data} =  await axios.post(`/api/user/${islogin}`,
         {
           name: formData.name,
           email: formData.email,
@@ -31,8 +31,9 @@ const LoginForm = () => {
       if (data.success) {
         toast.success(data.message);
         localStorage.setItem('token', data.token);
-        axios.defaults.headers.common['Authorization'] = data.token;
-        fetchUser();
+        const user = await fetchUser();
+        setUser(user);
+        setIsOwner(true);
         setShowLogin(false);
       } else {
         toast.error(data.message);
@@ -40,8 +41,6 @@ const LoginForm = () => {
       } catch (error: any) {
         toast.error(error);
       }
-    }
-
     // axios.post('/api/user/register', 
 
     // )

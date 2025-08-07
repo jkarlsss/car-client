@@ -17,8 +17,6 @@ export function meta() {
 
 const Home = () => {
 
-  const data = useAppProvider();
-
   return (
     <>
       <Hero />

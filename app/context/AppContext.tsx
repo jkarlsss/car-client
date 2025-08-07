@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { fetchUser } from "~/api/userApi";
 
 interface AppContextProps {
     user: User | null;
@@ -11,8 +12,8 @@ interface AppContextProps {
     setIsOwner: React.Dispatch<React.SetStateAction<boolean>>,
     isLoggedIn: boolean,
     setShowLogin: React.Dispatch<React.SetStateAction<boolean>>,
-    fetchUser: () => void;
     logOut: () => void;
+    isLoading: boolean
 }
 
 export const AppContext = createContext<AppContextProps>({
@@ -24,8 +25,8 @@ export const AppContext = createContext<AppContextProps>({
         setIsOwner: ()=>{},
         isLoggedIn: false,
         setShowLogin: ()=>{},
-        fetchUser: () => {},
         logOut: () => {},
+        isLoading: false
     });
 
 export const AppProvider = ({ children } : { children: React.ReactNode }) => {
@@ -34,41 +35,47 @@ export const AppProvider = ({ children } : { children: React.ReactNode }) => {
     const [token, setToken] = useState<string | null>(null);
     const [cars, setCars] = useState<Car | null>(null);
     const [isOwner, setIsOwner] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [isLoggedIn, setShowLogin] = useState(false);
 
     axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
 
-    const fetchUser = async () => {
-        try {
-            const {data} = await axios.get('/api/user/data');
-            if (!data.success) return;
-            setIsOwner(data.user.role === 'owner');
-            setUser(data.user);
-        } catch (error : any) {
-            logOut();
-        }
-    }
-
-    const fetchCars = async () => {
-        const { data } = await axios.get('/api/user/cars');
-        setCars({...data.cars, model: '123'});
-    }
-
     const logOut = () => {
         setToken(null);
         setUser(null);
+        setIsOwner(false);
         localStorage.removeItem('token');
         axios.defaults.headers.common['Authorization'] = '';
         toast.error('Session expired user not found.');
     }
 
     useEffect(() => {
-        const localToken = localStorage.getItem('token');
-        if (localToken) {
-            setToken(localToken);
-            axios.defaults.headers.common['Authorization'] = localToken;
-            fetchUser();
+        
+        const loadAuth = async () => {
+
+            try {
+                setIsLoading(true);
+                const user = await fetchUser();
+
+                if (!user) {
+                    setIsLoading(false);
+                    return null;
+                };
+
+                setUser(user);
+                setIsOwner(user.role === 'owner');
+    
+            } catch (error) {
+                toast.error('Something went wrong');
+                setIsLoading(false);
+                logOut();
+            } finally {
+                setIsLoading(false);
+            }
         }
+        
+        loadAuth();
+            
     }, []);
     
 
@@ -82,7 +89,7 @@ export const AppProvider = ({ children } : { children: React.ReactNode }) => {
         isLoggedIn: isLoggedIn,
         setShowLogin: setShowLogin,
         logOut: logOut,
-        fetchUser: fetchUser
+        isLoading
     };
 
     return (

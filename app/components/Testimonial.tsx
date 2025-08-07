@@ -1,7 +1,10 @@
+import { useEffect, useRef } from "react";
 import { cardsData } from "../constants/assets";
 import Title from "./Title";
+import { motion, useAnimation, useInView } from "motion/react";
 
 const CreateCard = ({ name, image, handle, date }: CardData) => (
+
   <div className="p-4 rounded-lg mx-4 shadow hover:shadow-lg shadow-gray-600 transition-all duration-200 w-72 shrink-0">
     <div className="flex gap-2">
       <img className="size-11 rounded-full" src={image} alt="User Image" />
@@ -53,8 +56,30 @@ const CreateCard = ({ name, image, handle, date }: CardData) => (
   </div>
 );
 const Testimonial = () => {
+  const ref = useRef(null);
+  const inView = useInView(ref, {initial: true});
+  const controls = useAnimation();
+
+  useEffect(() => {
+    if (inView) {
+      controls.start({
+        x: 0,
+        opacity: 1,
+        transition: {duration: 0.8, delay: 0.3}
+      })
+    } else {
+      controls.start({
+        x: 50,
+        opacity: 0
+      })
+    }
+  }, [inView, controls])
+
   return (
-    <div id="testimonials" className="mt-20">
+    <motion.div
+      initial={{x:50, opacity: 1}}
+      animate={controls}
+    ref={ref} id="testimonials" className="mt-20">
       <style>{`
             @keyframes marqueeScroll {
                 0% { transform: translateX(0%); }
@@ -91,7 +116,7 @@ const Testimonial = () => {
         </div>
         <div className="absolute right-0 top-0 h-full w-20 md:w-40 z-10 pointer-events-none bg-gradient-to-l from-gray-950 to-transparent"></div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

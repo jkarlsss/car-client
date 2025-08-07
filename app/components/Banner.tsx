@@ -1,8 +1,30 @@
+import { useEffect, useRef } from "react";
 import { assets } from "../constants/assets";
+import { motion, useAnimation, useInView } from "motion/react";
 
 const Banner = () => {
+  const ref = useRef(null);
+  const inView = useInView(ref, {initial:true});
+  const controls = useAnimation();
+  useEffect(() => {
+    if (inView) {
+      controls.start({
+        opacity: 1,
+        y: 0,
+        transition: {duration: 0.8, delay: 0.3}
+      })
+    } else {
+      controls.start({
+        y: 50, opacity: 0
+      })
+    }
+  }, [inView, controls])
+  
   return (
-    <div
+    <motion.div
+    ref={ref}
+    initial={{y: 50, opacity: 0}}
+    animate={controls}
       className="flex flex-col md:flex-row md:items-start items-center
     justify-between px-8 min-md:pl-14 pt-10 bg-gradient-to-l from-gray-600 to-gray-950
     max-w-6xl mx-3 md:mx-auto rounded-2xl overflow-hidden"
@@ -22,7 +44,7 @@ const Banner = () => {
         </button>
       </div>
       <img src={assets.banner_car_image} alt="car" className="max-h-45 mt-10" />
-    </div>
+    </motion.div>
   );
 };
 

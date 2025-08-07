@@ -12,7 +12,8 @@ interface Car {
   pricePerDay: number;
   location: string;
   description: string;
-  isAvaliable: boolean;
+  isFeatured: boolean;
+  isAvailable: boolean;
   createdAt: string;
 }
 
@@ -28,7 +29,7 @@ interface Booking {
   car: Car;
   user: string;
   owner: string;
-  pickupDate: string;
+  pickUpDate: string;
   returnDate: string;
   status: string;
   price: number;

@@ -1,18 +1,61 @@
 import { useEffect, useState } from "react";
 import Title from "../../components/owner/Title";
-import { dummyMyBookingsData } from "../../constants/assets";
+import { fetchOwnerBooks, updateBookingStatus } from "~/api/bookingApi";
+import toast from "react-hot-toast";
+import Loader from "~/components/owner/Loader";
 
 const ManageBookings = () => {
   const [bookings, setBookings] = useState<Booking[] | []>([]);
+  const [isBookingsLoading, setIsBookingsLoading] = useState(true);
+  const [status, setStatus] = useState('')
   const currency = import.meta.env.VITE_CURRENCY;
 
-  const fetchOwnerBookings = async () => {
-    setBookings(dummyMyBookingsData);
-  };
-
   useEffect(() => {
-    fetchOwnerBookings();
+
+    const loadOwnerBookings = async () => {
+      try {
+        setIsBookingsLoading(true);
+        const books = await fetchOwnerBooks();
+
+        if (!books) {
+          toast.error('Cannot handle Request');
+          setIsBookingsLoading(false);
+          return;
+        }
+
+        setBookings(books);
+        
+      } catch (error) {
+        toast.error('Error server '+error);
+      } finally {
+        setIsBookingsLoading(false);
+      }
+    }
+
+    loadOwnerBookings();
+
   }, []);
+
+  const handleUpdateStatus = async ({status, bookingId}: {status: string, bookingId: string}) => {
+    
+    try {
+      const isBookingStatusUpdated = await updateBookingStatus({status, bookingId});
+
+      if (!isBookingStatusUpdated) {
+        toast.error('Not Yours');
+        return;
+      }
+
+      toast.success('Successfuly updated');
+      setBookings((prevBooks) => prevBooks.map((item) => item._id === bookingId ? { ...item, status: status } : item))
+
+    } catch (error) {
+      toast.error('Server error '+ error);
+    }
+    
+  }
+
+  if (isBookingsLoading) return (<div className="flex-center flex-1 h-[80vh]"><Loader /></div>);
 
   return (
     <div className="px-4 pt-10 md:px-10 flex-1">
@@ -40,7 +83,7 @@ const ManageBookings = () => {
             </tr>
           </thead>
           <tbody>
-            {bookings.map((booking) => (
+            {bookings.length === 0 ? (<tr><td className="text-center" colSpan={7}>No Bookings found</td></tr>) : (bookings.map((booking) => (
               <tr key={booking._id}>
                 <td className="p-3 flex items-center gap-3">
                   <img
@@ -60,8 +103,8 @@ const ManageBookings = () => {
                   </div>
                 </td>
                 <td className="text-gray-300 px-4 py-2">
-                  {booking.pickupDate.split("T")[0]} -{" "}
-                  {booking.returnDate.split("T")[0]}
+                  {booking.pickUpDate?.split("T")[0]} -{" "}
+                  {booking.returnDate?.split("T")[0]}
                 </td>
                 <td className="text-gray-300 px-4 py-2">
                   {currency}
@@ -76,6 +119,7 @@ const ManageBookings = () => {
                   {booking.status === "pending" ? (
                     <select
                       value={booking.status}
+                      onChange={(e) => handleUpdateStatus({status: e.target.value, bookingId: booking._id})}
                       className="px-2 py-1.5 mt-1 text-gray-300 border
                   border-gray-500 rounded-lg"
                     >
@@ -103,7 +147,7 @@ const ManageBookings = () => {
                   )}
                 </td>
               </tr>
-            ))}
+            )))}
           </tbody>
         </table>
       </div>

@@ -1,16 +1,48 @@
 import { useState } from "react";
 import { NavLink, useLocation } from "react-router";
 import { assets, ownerMenuLinks } from "../../constants/assets";
+import { useAppProvider } from "~/context/AppContext";
+import { updateUserImage } from "~/api/userApi";
+import toast from "react-hot-toast";
 
-const Sidebar = ({ name, email, image }: User) => {
+const Sidebar = () => {
   const [userImage, setUserImage] = useState<File | null>(null);
+  const [isImageUpdateLoading, setIsImageUpdateLoading] = useState(false);
   const location = useLocation();
+  const { user } = useAppProvider();
 
-  const updateImage = () => {
-    image = URL.createObjectURL(userImage!);
-    setUserImage(null);
+  const updateImage = async () => {
+    if (user && userImage) {
+      setIsImageUpdateLoading(true);
+      user.image = URL.createObjectURL(userImage);
+    try {
+          const isImageUpdated = await updateUserImage(userImage);
+
+          if (!isImageUpdated) {
+            toast.error('request error');
+            setUserImage(null);
+            setIsImageUpdateLoading(false);
+            return;
+          }
+
+          toast.success('Profile image successfuly updated');
+        
+
+        } catch (error) {
+          toast.error('Server error');
+          setUserImage(null);
+          setIsImageUpdateLoading(false);
+        } finally {
+          setIsImageUpdateLoading(false);
+          setUserImage(null);
+        }
+
+      
+    }
+    
+    
+
   };
-
   return (
     <div
       className="relative min-h-screen md:flex flex-col items-center
@@ -22,7 +54,7 @@ const Sidebar = ({ name, email, image }: User) => {
             src={
               userImage
                 ? URL.createObjectURL(userImage)
-                : image ||
+                : user?.image ||
                   "https://unsplash.com/photos/woman-in-black-and-white-floral-shirt-2EdIX-O2lkI"
             }
             alt="image"
@@ -46,19 +78,20 @@ const Sidebar = ({ name, email, image }: User) => {
       </div>
       {userImage && (
         <button
+        disabled={isImageUpdateLoading}
           className="absolute top-0 right-0 flex p-2 gap-1 bg-gray-900
         cursor-pointer"
         >
           Save
           <img
-            src={assets.check_icon}
+            src={isImageUpdateLoading ? '/img/loading.svg' : assets.check_icon}
             alt="check icon"
             width={13}
             onClick={updateImage}
           />
         </button>
       )}
-      <p className="mt-2 text-base max-md:hidden">{name}</p>
+      <p className="mt-2 text-base max-md:hidden">{user?.name}</p>
       <div className="w-full">
         {ownerMenuLinks.map((link, index) => (
           <NavLink

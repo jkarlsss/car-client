@@ -1,7 +1,11 @@
 import { Link } from "react-router";
 import { assets } from "../../constants/assets";
+import { useAppProvider } from "~/context/AppContext";
 
-const NavbarOwner = ({ name, email }: User) => {
+const NavbarOwner = () => {
+
+  const { user } = useAppProvider();
+
   return (
     <div
       className="flex items-center justify-between px-6 md:px-10
@@ -10,7 +14,7 @@ const NavbarOwner = ({ name, email }: User) => {
       <Link to="/">
         <img src={assets.logo} alt="logo" className="h-7" />
       </Link>
-      <p>Welcome, {name || "Owner"}</p>
+      <p>Welcome, {user?.name || "Owner"}</p>
     </div>
   );
 };

@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import Title from "../../components/owner/Title";
 import { assets, dummyDashboardData } from "../../constants/assets";
+import { fetchDashboardData } from "~/api/userApi";
+import toast from "react-hot-toast";
+import Loader from "~/components/owner/Loader";
 
 const Dashboard = () => {
   const [data, setData] = useState<DashboardData>({
@@ -11,6 +14,7 @@ const Dashboard = () => {
     recentBookings: [],
     monthlyRevenue: 0,
   });
+  const [isLoadingData, setIsLoadingData] = useState(true);
 
   const currency = import.meta.env.VITE_CURRENCY;
 
@@ -38,8 +42,44 @@ const Dashboard = () => {
   ];
 
   useEffect(() => {
-    setData(dummyDashboardData);
-  }, [setData]);
+    
+    const loadDashboardData = async () => {
+      try {
+        setIsLoadingData(true);
+        const dashboardData : any = await fetchDashboardData();
+
+        if (!dashboardData) return;
+        ;
+  //  "totalCars": 10,
+  //   "totalBookings": 5,
+  //   "pendingBookings": 2,
+  //   "completedBookings": 2,
+
+        if (!dashboardData.success) {
+          toast.error('request failed');
+          setIsLoadingData(false); 
+          return;
+        }
+
+        setData({completedBookings: dashboardData.completedBookings, totalBookings: dashboardData.totalBookings
+          , pendingBookings: dashboardData.pendingBookings, totalCars: dashboardData.totalCars,
+          monthlyRevenue: dashboardData.monthlyRevenue, recentBookings: dashboardData.recentBooking
+        });
+
+        
+      } catch (error) {
+        toast.error('Server error '+ error);
+        setIsLoadingData(false);
+      } finally {
+        setIsLoadingData(false);
+      }
+    }
+
+    loadDashboardData();
+
+  }, []);
+
+  if (isLoadingData) return (<div className="flex-center flex-1 h-[80vh]"><Loader /></div>)
 
   return (
     <div className="px-4 pt-10 md:px-10 flex-1">

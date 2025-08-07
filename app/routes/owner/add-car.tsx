@@ -1,9 +1,12 @@
 import { useState } from "react";
 import Title from "../../components/owner/Title";
 import { assets, cityList } from "../../constants/assets";
+import { createCar } from "~/api/carApi";
+import toast from "react-hot-toast";
 
 const AddCar = () => {
   const [image, setImage] = useState<File | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [car, setCar] = useState({
     brand: "",
     model: "",
@@ -18,12 +21,44 @@ const AddCar = () => {
   });
   const currency = import.meta.env.VITE_CURRENCY;
 
-  const onSubmitHandler = (e: React.FormEvent) => {
+  const onSubmitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    try {
+      setIsLoading(true);
+      const isCarAdded = await createCar(car as any, image);
+
+      if (!isCarAdded) {
+        toast.error('Failed to create car');
+        setIsLoading(false);
+      } 
+    } catch (error) {
+      console.error(error);
+      toast.error('Failed to create car');
+      setIsLoading(false);
+    } finally {
+      
+      toast.success('Car is Successfuly added');
+      setCar({
+        brand: "",
+        model: "",
+        category: "",
+        year: "",
+        pricePerDay: "",
+        location: "",
+        description: "",
+        seating_capacity: "",
+        fuel_type: "",
+        transmission: "",
+      });
+      setIsLoading(false);
+      setImage(null);
+    }
+
   };
 
   return (
-    <div className="px-4 pt-10 md:px-10 flex-1">
+    <div className="px-4 py-10 md:px-10 flex-1">
       <Title title="Add Car" subtitle="Add a new car to your fleet" />
 
       <form
@@ -199,8 +234,8 @@ const AddCar = () => {
             onChange={(e) => setCar({ ...car, description: e.target.value })}
           ></textarea>
         </div>
-        <button className="border text-gray-300 border-gray-500 p-2 rounded-md mt-4
-        cursor-pointer hover:bg-gray-700 transition duration-200">List Your Car</button>
+        <button disabled={isLoading} className={`border text-gray-300 border-gray-500 p-2 rounded-md mt-4
+        ${!isLoading && 'cursor-pointer hover:bg-gray-700 transition duration-200'} flex-center gap-2`}>{isLoading && (<img src="/img/loading.svg" className="h-4" />)} List Your Car</button>
       </form>
     </div>
   );
