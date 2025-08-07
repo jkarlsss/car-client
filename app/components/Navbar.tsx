@@ -10,8 +10,8 @@ import { motion } from "motion/react";
 const Navbar = () => {
 
   const { setShowLogin, logOut, user, isLoading, setIsOwner, isOwner } = useAppProvider();
-  const location = useLocation();
   const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
   const navigate = useNavigate();
 
   const handleChangeToOwner = async () => {
@@ -62,9 +62,11 @@ const Navbar = () => {
           <input
             type="text"
             className="p-1.5 w-full bg-transparent outline-none placeholder-gray-400"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
             placeholder="Search products"
           />
-          <img src={assets.search_icon} alt="search" />
+          <img src={assets.search_icon} alt="search" className="cursor-pointer" onClick={() => navigate(`/cars?q=${search}`)} />
         </div>
         <div className="flex md:flex-row max-sm:flex-col items-center gap-4">
           

@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import Title from "../../components/Title";
-import { assets, dummyCarData } from "../../constants/assets";
+import { assets } from "../../constants/assets";
 import CarCard from "../../components/CarCard";
-import { fetchCars, fetchSearchedCars } from "~/api/carApi";
+import { complexSearch, fetchSearchedCars } from "~/api/carApi";
 import toast from "react-hot-toast";
 import Loader from "~/components/Loader";
 import { useAppProvider } from "~/context/AppContext";
@@ -12,80 +12,61 @@ import { useSearchParams } from "react-router";
 
 const Cars = () => {
   const { isLoading } = useAppProvider();
-  const [search, setSearch] = useState("");
-  const [isLoadingCars, setIsLoadingCars] = useState(false);
-  const [cars, setCars] = useState<Car[] | null>(null)
+  const [cars, setCars] = useState<Car[] | null>(null);
+  const [isLoadingCars, setIsLoadingCars] = useState(true);
   const [typingTimeout, setTypingTimeout] = useState<NodeJS.Timeout | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
-  const term = searchParams.get('q') || '';
+
+  const term = searchParams.get("q") || "";
+  const location = searchParams.get("location") || "";
+  const pickUpDate = searchParams.get("pickUpDate") || "";
+  const returnDate = searchParams.get("returnDate") || "";
 
   useEffect(() => {
-    const loadCars = async () => {
+    const fetchCarsData = async () => {
       try {
         setIsLoadingCars(true);
-        let cars;
-        if (term) {
-          cars = await fetchSearchedCars(term);
+        let fetchedCars;
+
+        if (location && pickUpDate && returnDate) {
+          fetchedCars = await complexSearch({ location, pickUpDate, returnDate, term });
+        } else if (term) {
+          fetchedCars = await fetchSearchedCars(term);
         } else {
-
-          cars = await fetchAllAvailableCars();
+          fetchedCars = await fetchAllAvailableCars();
         }
-        console.log(term);
-        
-        setCars(cars);
-      } catch (error) {
-        console.log(error);
-        toast.error('Server error code 500');
-        setIsLoadingCars(false);
 
+        setCars(fetchedCars);
+      } catch (error) {
+        console.error("Error fetching cars:", error);
+        toast.error("Server error code 500");
       } finally {
         setIsLoadingCars(false);
-        console.log(cars);
-        
       }
     };
 
-    loadCars();
-    
-  }, [])
+    fetchCarsData();
+  }, [term, location, pickUpDate, returnDate]);
 
-  const handleSearchCars = async (term: string) => {
-    setSearch(term);
-    setSearchParams({q: term})
+  const handleSearchInput = (value: string) => {
     setIsLoadingCars(true);
-    // Debounce the search
     if (typingTimeout) clearTimeout(typingTimeout);
-    setTypingTimeout(
-      setTimeout(() => {
-        fetchResults(term);
-      }, 400))
-  }
 
-  const fetchResults = async (query: string) => {
-    setIsLoadingCars(true);
-
-    if (!query) {
-      const cars = await fetchAllAvailableCars();
-      if (cars) {
-        setCars(cars);
-        setIsLoadingCars(false);
-        return;
-      }
+    const newParams = new URLSearchParams(searchParams);
+    if (value.trim()) {
+      newParams.set("q", value);
+    } else {
+      newParams.delete("q");
     }
 
-    try {
-      const cars = await fetchSearchedCars(query);
-      if (cars) {
-        setCars(cars);
-      }
-    } catch (err) {
-      console.error('Search error:', err);
-        setIsLoadingCars(false);
-    } finally {
-        setIsLoadingCars(false);
-    }
+    // Debounce
+    const timeout = setTimeout(() => {
+      setSearchParams(newParams);
+    }, 500);
+
+    setTypingTimeout(timeout);
   };
-  
+
   return (
     <div>
       <div className="flex flex-col items-center py-20 max-md:px-4">
@@ -95,11 +76,10 @@ const Cars = () => {
           align="center"
         />
         <motion.div
-        initial={{y: 50, opacity: 0}}
-        animate={{y: 0, opacity: 1}}
-        transition={{duration: 0.8, delay: 0.3}}
-          className="flex items-center px-4 mt-6 max-w-140
-        w-full h-12 rounded-full border border-gray-400"
+          initial={{ y: 50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.3 }}
+          className="flex items-center px-4 mt-6 max-w-140 w-full h-12 rounded-full border border-gray-400"
         >
           <img
             src={assets.search_icon}
@@ -107,8 +87,8 @@ const Cars = () => {
             className="w-4.5 h-4.5 mr-2"
           />
           <input
-            value={search}
-            onChange={(e) => handleSearchCars(e.target.value)}
+            defaultValue={term}
+            onChange={(e) => handleSearchInput(e.target.value)}
             type="text"
             placeholder="Search by maker, model, or category"
             className="w-full h-full outline-none"
@@ -122,14 +102,20 @@ const Cars = () => {
       </div>
 
       <motion.div
-        initial={{x: 50, opacity: 0}}
-        animate={{x: 0, opacity: 1}}
-        transition={{duration: 0.8, delay: 0.3}}
-      className="px-6 md:px-16 lg:px-24 xl:px-32 mt-10">
-        <p className="text-gray-300 xl:px-20 max-w-7xl mx-auto">Showing {cars?.length || 0} Cars</p>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-4
-        xl:px-20 max-w-7xl mx-auto">
-          {isLoading || isLoadingCars ? (
+        initial={{ x: 50, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ duration: 0.8, delay: 0.3 }}
+        className="px-6 md:px-16 lg:px-24 xl:px-32 mt-10"
+      >
+        <p className="text-gray-300 xl:px-20 max-w-7xl mx-auto">
+          Showing {cars?.length || 0} Cars
+        </p>
+        <div
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-4
+        xl:px-20 max-w-7xl mx-auto"
+        >
+
+          {isLoading || isLoadingCars || !cars ? (
             <>
               <Loader />
               <Loader />
@@ -138,10 +124,10 @@ const Cars = () => {
               <Loader />
               <Loader />
             </>
-          ):(
-            cars?.map((car) => (
+          ) : (
+            cars.map((car) => (
               <div key={car._id}>
-              <CarCard {...car} />
+                <CarCard {...car} />
               </div>
             ))
           )}

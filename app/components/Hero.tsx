@@ -1,9 +1,21 @@
 import { useState } from "react";
 import { assets, cityList } from "../constants/assets";
 import { motion } from "motion/react";
+import { useNavigate } from "react-router";
 
 const Hero = () => {
   const [pickupLocation, setPickupLocation] = useState("");
+  const [pickUpDate, setPickUpDate] = useState('');
+  const [returnDate, setReturnDate] = useState('');
+
+  const navigate = useNavigate();
+
+  const handleSubmitData = () => {
+    if (pickUpDate && pickupLocation && returnDate) {
+      navigate(`/cars?location=${pickupLocation}&pickUpDate=${pickUpDate}&returnDate=${returnDate}`);
+    }
+  }
+
   return (
     <motion.div
     initial={{opacity: 0}}
@@ -53,6 +65,8 @@ const Hero = () => {
             <input
               type="date"
               id="pickup-date"
+              value={pickUpDate}
+              onChange={(e) => setPickUpDate(e.target.value)}
               min={new Date().toISOString().split("T")[0]}
               className="text-sm text-gray-500"
               required
@@ -63,6 +77,8 @@ const Hero = () => {
             <input
               type="date"
               id="return-date"
+              value={returnDate}
+              onChange={(e) => setReturnDate(e.target.value)}
               className="text-sm text-gray-500"
               required
             />
@@ -71,6 +87,8 @@ const Hero = () => {
         <motion.button
         whileHover={{scale: 1.05}}
         whileTap={{ scale:0.95 }}
+        onClick={handleSubmitData}
+        type="button"
           className="flex-center gap-2 border py-3 px-3 rounded-full
           hover:bg-gray-700 transition text-sm max-sm:mt-2 duration-200 cursor-pointer"
         >

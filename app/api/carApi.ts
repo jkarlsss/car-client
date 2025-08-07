@@ -81,6 +81,20 @@ export const fetchSearchedCars = async (q: string) => {
   }
 }
 
+export const complexSearch = async ({location,pickUpDate,returnDate,term}: {term: string, location: string, pickUpDate: string, returnDate: string}) => {
+  try {
+    const { data } = await axios.post('/api/book/available-cars', {location,pickUpDate,returnDate,term});
+
+    if (!data.success) return false;
+
+    return data.cars;
+
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+}
+
 export const createCar = async (car: Car, image: File | null) => {
   try {
 

@@ -46,7 +46,7 @@ export const AppProvider = ({ children } : { children: React.ReactNode }) => {
         setIsOwner(false);
         localStorage.removeItem('token');
         axios.defaults.headers.common['Authorization'] = '';
-        toast.error('Session expired user not found.');
+        toast.success('You have logged out');
     }
 
     useEffect(() => {

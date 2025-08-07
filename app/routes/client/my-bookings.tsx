@@ -5,6 +5,7 @@ import { fetchUserBookings } from "~/api/bookingApi";
 import toast from "react-hot-toast";
 import Loader from "~/components/owner/Loader";
 import { useAppProvider } from "~/context/AppContext";
+import { motion } from "motion/react";
 
 const MyBookings = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -36,7 +37,7 @@ const MyBookings = () => {
   // ✅ Loader for initial state
   if (isLoading || isLoadingBook) {
     return (
-      <div className="flex justify-center items-center h-[50vh]">
+      <div className="flex justify-center items-center h-[80vh]">
         <Loader />
       </div>
     );
@@ -52,7 +53,11 @@ const MyBookings = () => {
   }
 
   return (
-    <div className="px-6 md:px-16 lg:px-24 xl:px-32 2xl:px-48 mt-16 text-sm max-w-7xl">
+    <motion.div
+    initial={{y:50, opacity: 0}}
+    animate={{y: 0, opacity: 1}}
+    transition={{ duration: 0.8, delay: 0.3}}
+    className="px-6 md:px-16 lg:px-24 xl:px-32 2xl:px-48 mt-16 text-sm max-w-7xl">
       <Title title="My Bookings" subtitle="Check out your bookings" align="left" />
 
       {bookings.length === 0 ? (
@@ -100,7 +105,7 @@ const MyBookings = () => {
                 />
                 <div>
                   <p>Rental Period</p>
-                  {booking.pickupDate?.split("T")[0]} to {booking.returnDate?.split("T")[0]}
+                  {booking.pickUpDate?.split("T")[0]} to {booking.returnDate?.split("T")[0]}
                 </div>
               </div>
               <div className="flex items-start gap-2 mt-3">
@@ -130,7 +135,7 @@ const MyBookings = () => {
           </div>
         ))
       )}
-    </div>
+    </motion.div>
   );
 };
 
