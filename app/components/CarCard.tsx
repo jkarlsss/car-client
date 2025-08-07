@@ -9,7 +9,7 @@ const CarCard = ({
   year,
   pricePerDay,
   image,
-  isAvaliable,
+  isAvailable,
   seating_capacity,
   fuel_type,
   transmission,
@@ -29,9 +29,9 @@ const CarCard = ({
           className="w-full h-full object-cover
         transition-transform duration-500 group-hover:scale-105 rounded-md"
         />
-        {isAvaliable && (
+        {isAvailable && (
           <p
-            className="absolute top-4 left-4 bg-primary/90 text-white
+            className="absolute top-4 bg-gray-800 left-4 bg-primary/90 text-white
         text-xs px-2.5 py-1 rounded-full"
           >
             Available Now

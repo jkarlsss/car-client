@@ -7,11 +7,9 @@
 
 html,
 body {
-  @apply bg-white dark:bg-gray-950;
+  @apply  dark:bg-gray-950;
 
-  @media (prefers-color-scheme: dark) {
-    color-scheme: dark;
-  }
+  color-scheme: dark;
   scroll-behavior: smooth;
 }
 
